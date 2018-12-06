@@ -60,6 +60,7 @@ class SystemInfo {
 			'show_users'           => true,
 			'show_plugins'         => true,
 			'show_network_plugins' => true,
+			'show_session_details' => false,
 		);
 	}
 
@@ -96,19 +97,20 @@ class SystemInfo {
 Site URL:                 <?php echo site_url() . "\n"; ?>
 Home URL:                 <?php echo home_url() . "\n"; ?>
 Multisite:                <?php echo is_multisite() ? 'Yes' . "\n" : 'No' . "\n"; ?>
+Active Theme:             <?php echo $this->get_current_theme_name() . "\n"; ?>
 
 -- WordPress Configuration --
 
 Version:                  <?php echo get_bloginfo( 'version' ) . "\n"; ?>
 Language:                 <?php echo get_locale() . "\n"; ?>
 Permalink Structure:      <?php echo get_option( 'permalink_structure' ) . "\n"; ?>
+WP Table Prefix:          <?php echo $wpdb->prefix, "\n"; ?>
 GMT Offset:               <?php echo esc_html( get_option( 'gmt_offset' ) ), "\n"; ?>
 Memory Limit:             <?php echo WP_MEMORY_LIMIT; ?><?php echo "\n"; ?>
 Memory Max Limit:         <?php echo WP_MAX_MEMORY_LIMIT; ?><?php echo "\n"; ?>
-Active Theme:             <?php echo $this->get_current_theme_name() . "\n"; ?>
 ABSPATH:                  <?php echo ABSPATH . "\n"; ?>
-WP Table Prefix:          <?php echo $wpdb->prefix, "\n"; ?>
 WP_DEBUG:                 <?php echo defined( 'WP_DEBUG' ) ? WP_DEBUG ? 'Enabled' . "\n" : 'Disabled' . "\n" : 'Not set' . "\n"; ?>
+WP_DEBUG_LOG:              <?php echo defined( 'WP_DEBUG_LOG' ) ? WP_DEBUG_LOG ? 'Enabled' . "\n" : 'Disabled' . "\n" : 'Not set' . "\n"; ?>
 SAVEQUERIES:              <?php echo defined( 'SAVEQUERIES' ) ? SAVEQUERIES ? 'Enabled' . "\n" : 'Disabled' . "\n" : 'Not set' . "\n"; ?>
 WP_SCRIPT_DEBUG:          <?php echo defined( 'WP_SCRIPT_DEBUG' ) ? WP_SCRIPT_DEBUG ? 'Enabled' . "\n" : 'Disabled' . "\n" : 'Not set' . "\n"; ?>
 DISABLE_WP_CRON:          <?php echo defined( 'DISABLE_WP_CRON' ) ? DISABLE_WP_CRON ? 'Yes' . "\n" : 'No' . "\n" : 'Not set' . "\n"; ?>
@@ -121,7 +123,7 @@ EMPTY_TRASH_DAYS:         <?php echo defined( 'EMPTY_TRASH_DAYS' ) ? EMPTY_TRASH
 		$this->print_user_roles();
 		$this->print_current_plugins();
 		$this->print_network_active_plugins();
-		$host = $this->print_web_host_details();
+		$this->print_web_host_details();
 ?>
 -- User Browser --
 
@@ -154,16 +156,9 @@ cURL:                     <?php echo ( function_exists( 'curl_init' ) ) ? 'Your 
 SOAP Client:              <?php echo ( class_exists( 'SoapClient' ) ) ? 'Your server has the SOAP Client enabled.' : 'Your server does not have the SOAP Client enabled.'; ?><?php echo "\n"; ?>
 SUHOSIN:                  <?php echo ( extension_loaded( 'suhosin' ) ) ? 'Your server has SUHOSIN installed.' : 'Your server does not have SUHOSIN installed.'; ?><?php echo "\n"; ?>
 
--- Session Configuration --
-
-Session:                  <?php echo isset( $_SESSION ) ? 'Enabled' : 'Disabled'; ?><?php echo "\n"; ?>
-Session Name:             <?php echo esc_html( ini_get( 'session.name' ) ); ?><?php echo "\n"; ?>
-Cookie Path:              <?php echo esc_html( ini_get( 'session.cookie_path' ) ); ?><?php echo "\n"; ?>
-Save Path:                <?php echo esc_html( ini_get( 'session.save_path' ) ); ?><?php echo "\n"; ?>
-Use Cookies:              <?php echo ini_get( 'session.use_cookies' ) ? 'On' : 'Off'; ?><?php echo "\n"; ?>
-Use Only Cookies:         <?php echo ini_get( 'session.use_only_cookies' ) ? 'On' : 'Off'; ?><?php echo "\n"; ?>
-
 <?php
+		$this->print_session_information();
+
 		/**
 		 * Runs after displaying system info.
 		 *
@@ -370,6 +365,25 @@ Use Only Cookies:         <?php echo ini_get( 'session.use_only_cookies' ) ? 'On
 			echo $role_details['name'], ' (', absint( $this->get_user_count_by_role( $role ) ), '), ';
 		}
 		echo "\n";
+	}
+
+	/**
+	 * Print session information.
+	 */
+	protected function print_session_information() {
+		if ( ! $this->config['show_session_details'] ) {
+			return;
+		}
+		?>
+-- Session Configuration --
+
+Session:                  <?php echo isset( $_SESSION ) ? 'Enabled' : 'Disabled'; ?><?php echo "\n"; ?>
+Session Name:             <?php echo esc_html( ini_get( 'session.name' ) ); ?><?php echo "\n"; ?>
+Cookie Path:              <?php echo esc_html( ini_get( 'session.cookie_path' ) ); ?><?php echo "\n"; ?>
+Save Path:                <?php echo esc_html( ini_get( 'session.save_path' ) ); ?><?php echo "\n"; ?>
+Use Cookies:              <?php echo ini_get( 'session.use_cookies' ) ? 'On' : 'Off'; ?><?php echo "\n"; ?>
+Use Only Cookies:         <?php echo ini_get( 'session.use_only_cookies' ) ? 'On' : 'Off'; ?><?php echo "\n"; ?>
+		<?php
 	}
 
 	/**
