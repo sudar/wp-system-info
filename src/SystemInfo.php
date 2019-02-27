@@ -279,7 +279,7 @@ SUHOSIN:                  <?php echo ( extension_loaded( 'suhosin' ) ) ? 'Your s
 		}
 
 		echo "\n";
-		echo '-- Network Active Plugins --';
+		echo '-- Network Active Plugins --', "\n\n";
 
 		$plugins        = wp_get_active_network_plugins();
 		$active_plugins = get_site_option( 'active_sitewide_plugins', array() );
